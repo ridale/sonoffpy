@@ -34,13 +34,13 @@ Connect to a hotspot to make things easier
 >>> sta_if.connect('<your ESSID>', '<your password>')
 >>> sta_if.ifconfig()
 ```
-
+You should see your ip address etc, it may take a while to connect to the hotspot
 ## start webrepl
 Start the webrepl server on the board
 ```
 import webrepl_setup
 ```
-
+Then follow the onscreen instructions
 # get the client
 ```
 git clone https://github.com/micropython/webrepl.git
@@ -49,7 +49,7 @@ And browse to the file location ...
 ```
 file:///home/richard/sonoffpy/webrepl/webrepl.html
 ```
-
+Then enter the IP address you saw above in the connect to wifi section
 ## load lib
 in a repl prompt run
 ```
