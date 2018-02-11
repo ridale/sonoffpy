@@ -1,4 +1,6 @@
 import machine
+import network
+
 
 PIN_BUTTON = const(0)
 PIN_RELAY  = const(12)
@@ -7,8 +9,12 @@ PIN_LED    = const(13)
 led    = None
 relay  = None
 button = None
+
 def check_inputs():
-    '''Check the digital IO and set the relay accordingly'''
+    '''Check the digital IO and set the relay accordingly
+    
+    TODO figure out which sense the relay is
+    '''
     change_relay = False
     while (button.value() == 0):
         # button pressed
@@ -19,9 +25,9 @@ def check_inputs():
         else:
             relay.on()
     if (relay.value() == 0):
-        led.off()
+        led.off() # is on
     else:
-        led.on()
+        led.on()  # is off
 
 def do_webstuff():
     '''Handle any webserver requests'''
@@ -40,7 +46,8 @@ def setup():
     relay  = machine.Pin(PIN_RELAY,  machine.Pin.OUT)
     led    = machine.Pin(PIN_LED,    machine.Pin.OUT)
     # connect to wifi
-
+    iface = network.WLAN(network.STA_IF)
+    iface.connect('SSID','PASSWORD')
 
 def main_loop():
     '''Main runloop should never exit'''
