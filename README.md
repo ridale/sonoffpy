@@ -41,7 +41,7 @@ Start the webrepl server on the board
 import webrepl_setup
 ```
 Then follow the onscreen instructions
-# get the client
+## get the client
 ```
 git clone https://github.com/micropython/webrepl.git
 ```
