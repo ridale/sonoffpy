@@ -1,36 +1,41 @@
 import machine
 import network
+import uhttpd
+import uasyncio as asyncio
+import config
 
-
-PIN_BUTTON = const(0)
-PIN_RELAY  = const(12)
-PIN_LED    = const(13)
 
 led    = None
 relay  = None
 button = None
 
+on_handler      = None
+off_handler     = None
+status_handler  = None
+
 def check_inputs():
     '''Check the digital IO and set the relay accordingly
-    
+
     TODO figure out which sense the relay is
     '''
-    change_relay = False
-    while (button.value() == 0):
-        # button pressed
-        change_relay = True
-    if (change_relay):
-        if(relay.value() == 1):
-            relay.off()
+    while True:
+        change_relay = False
+        while (button.value() == 0):
+            # button pressed
+            change_relay = True
+        
+        if (change_relay):
+            if(relay.value() == 1):
+                relay.off()
+            else:
+                relay.on()
+        
+        if (relay.value() == 0):
+            led.off() # is on
         else:
-            relay.on()
-    if (relay.value() == 0):
-        led.off() # is on
-    else:
-        led.on()  # is off
-
-def do_webstuff():
-    '''Handle any webserver requests'''
+            led.on()  # is off
+        
+        await asyncio.sleep(1)
 
 
 def teardown():
@@ -47,14 +52,25 @@ def setup():
     led    = machine.Pin(PIN_LED,    machine.Pin.OUT)
     # connect to wifi
     iface = network.WLAN(network.STA_IF)
-    iface.connect('SSID','PASSWORD')
-
+    iface.connect(SSID,PASSWORD)
+    # setup webserver
+    on_handler = 
+    off_handler = 
+    status_handler = 
+    
 def main_loop():
-    '''Main runloop should never exit'''
-    while 1:
-        # do the things
-        check_inputs()
-        do_webstuff()
+    '''Main run loop'''
+    setup()
+    loop = asyncio.get_event_loop()
+    loop.create_task(check_inputs())
+    server = uhttpd.Server([
+                    ('/on',  on_handler),
+                    ('/off', off_handler),
+                    ('/',    status_handler)
+                    ])
+    server.run()
+    teardown()
+
 
 if __name__ == '__main__':
     setup()
