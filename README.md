@@ -1,4 +1,6 @@
 # Setup
+These instructions have been tested on a Linux PC running Ubuntu 16.04, your mileage may vary.
+
 ## Install esptool
 Load the esptool on your computer
 ```
