@@ -1,6 +1,7 @@
 import machine
 import network
 import uhttpd
+import uhttpd.api_handler
 import uasyncio as asyncio
 import config
 
@@ -9,9 +10,28 @@ led    = None
 relay  = None
 button = None
 
-on_handler      = None
-off_handler     = None
-status_handler  = None
+handler      = None
+
+class Handler:
+    def __init__(self):
+        pass
+
+    #
+    # callbacks
+    #
+    def get(self, api_request):
+        components = api_request['context']
+        if (components == 'on'):
+            relay.off()
+            led.off()
+        elif (components == 'off'):
+            relay.on()
+            led.on()
+
+        if (relay.off()):
+            return {'state':'on'}
+        else:
+            return {'state':'on'}
 
 def check_inputs():
     '''Check the digital IO and set the relay accordingly
@@ -54,20 +74,15 @@ def setup():
     iface = network.WLAN(network.STA_IF)
     iface.connect(SSID,PASSWORD)
     # setup webserver
-    on_handler = 
-    off_handler = 
-    status_handler = 
-    
+    handler = uhttpd.api_handler.Handler([([], Handler())])
+
+
 def main_loop():
     '''Main run loop'''
     setup()
     loop = asyncio.get_event_loop()
     loop.create_task(check_inputs())
-    server = uhttpd.Server([
-                    ('/on',  on_handler),
-                    ('/off', off_handler),
-                    ('/',    status_handler)
-                    ])
+    server = uhttpd.Server([('/', status_handler)])
     server.run()
     teardown()
 
