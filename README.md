@@ -55,6 +55,7 @@ in a repl prompt run
 ```
 import upip
 upip.install('uasyncio')
+upip.install('uhttpd')
 ```
 This installs the asyncio code allowing "multithreading"
 
