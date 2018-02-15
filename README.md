@@ -78,4 +78,6 @@ When the button is pressed the switch pin goes low.
 ```
 
 ## load program
-We can load a program that is run at startup by loading a file called main.py
+**NOTE** This code is currently a Work In Progress and it is likely that it does not yet work.
+
+We can load a program that is run at startup by loading the main.py and config.py files to the sonoff using the webrepl upload buttons.
