@@ -55,7 +55,7 @@ def check_inputs():
         else:
             led.on()  # is off
         
-        await asyncio.sleep(1)
+        await asyncio.sleep_ms(200)
 
 
 def teardown():
