@@ -57,11 +57,9 @@ import upip
 upip.install('uasyncio')
 upip.install('uhttpd')
 ```
-This installs the asyncio code allowing "multithreading"
+This installs the asyncio library allowing "multithreading" and the http server library
 
-we are going to want this so we can run the browser and do stuff with the hardware. We could also try interrupt based code but that has its issues as well.
-
-## check th hardware a bit...
+## check the hardware a bit...
 We can do some IO tests
 ```
 >>> import machine
@@ -81,6 +79,3 @@ When the button is pressed the switch pin goes low.
 
 ## load program
 We can load a program that is run at startup by loading a file called main.py
-
-We can also modify the boot.py to do stuff, but lets not.
-
