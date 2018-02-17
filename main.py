@@ -1,16 +1,26 @@
+import sys
 import machine
 import network
 import uhttpd
+import utime
 import uhttpd.api_handler
 import uasyncio as asyncio
-import config
+import logging
 
+SSID='yourssid'
+PASSWORD='yourpassword'
 
-led    = None
-relay  = None
-button = None
+PIN_BUTTON = const(0)
+PIN_RELAY  = const(12)
+PIN_LED    = const(13)
 
-handler      = None
+button = machine.Pin(PIN_BUTTON, machine.Pin.IN)
+relay  = machine.Pin(PIN_RELAY,  machine.Pin.OUT)
+led    = machine.Pin(PIN_LED,    machine.Pin.OUT)
+
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger("sonoffpy")
+
 
 class Handler:
     def __init__(self):
@@ -31,7 +41,7 @@ class Handler:
         if (relay.off()):
             return {'state':'on'}
         else:
-            return {'state':'on'}
+            return {'state':'off'}
 
 def check_inputs():
     '''Check the digital IO and set the relay accordingly
@@ -61,35 +71,48 @@ def check_inputs():
 def teardown():
     '''Should never be run'''
     # oops alert
+    log.critical("Exiting sonoffpy")
     # disconnect
     # relay off
 
 def setup():
     '''Setup the system (run once at start)'''
+    log.info("Started - setup hardware")
     # setup IO
-    button = machine.Pin(PIN_BUTTON, machine.Pin.IN)
-    relay  = machine.Pin(PIN_RELAY,  machine.Pin.OUT)
-    led    = machine.Pin(PIN_LED,    machine.Pin.OUT)
+    relay.on()
+    led.on()
+
     # connect to wifi
+    start_ms = utime.ticks_ms()
     iface = network.WLAN(network.STA_IF)
     iface.connect(SSID,PASSWORD)
-    # setup webserver
-    handler = uhttpd.api_handler.Handler([([], Handler())])
+    while not iface.isconnected():
+        utime.sleep_ms(100)
+        if utime.ticks_diff(start_ms, utime.ticks_ms()) > 10000:
+            log.critical('Connecting to WLAN timed out. Resetting!')
+            machine.reset()
+
 
 
 def main_loop():
     '''Main run loop'''
-    setup()
+    log.info("get loop")
     loop = asyncio.get_event_loop()
+    log.info("make server")
+    # setup webserver
+    handler = uhttpd.api_handler.Handler([([], Handler())])
+    server = uhttpd.Server([('/', handler)])
+    log.info("add task")
     loop.create_task(check_inputs())
-    server = uhttpd.Server([('/', status_handler)])
+    log.info("run server")
     server.run()
-    teardown()
 
 
 if __name__ == '__main__':
     setup()
     try:
         main_loop()
+    except Exception as exp:
+        sys.print_exception(exp)
     finally:
         teardown()
