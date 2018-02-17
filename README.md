@@ -134,4 +134,4 @@ make
 ## load program
 **NOTE** This code is currently a Work In Progress and it is likely that it does not yet work.
 
-First you will want to edit the config.py file and add your wifi SSID and password. Then load the program to be run at startup by uploading the main.py and config.py files to the sonoff using the webrepl upload button.
+First you will want to edit the config.py file and add your wifi SSID and password. Then load the program to be run at startup by uploading the main.py file to the sonoff using the webrepl upload button.
