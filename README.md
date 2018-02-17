@@ -143,5 +143,5 @@ Once you have everything loaded and setup you can test that the code is working 
 
 1. Pressing the button and seeing if the light switches on and off
 2. browsing to your sonoff IP address
-    * http://<sonoff ip address>/on
-    * http://<sonoff ip address>/off
+    * ```http://<sonoff ip address>/on```
+    * ```http://<sonoff ip address>/off```
