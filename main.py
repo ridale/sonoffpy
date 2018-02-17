@@ -1,14 +1,17 @@
-import sys
+'''
+Seems to work mosty, need to check the sense of the relay
+all of the other I/O is reversed.
+'''
 import machine
 import network
-import uhttpd
 import utime
+import uhttpd
 import uhttpd.api_handler
 import uasyncio as asyncio
-import logging
 
-SSID='yourssid'
-PASSWORD='yourpassword'
+SSID = 'yourssid'
+PASSWORD = 'yourpassword'
+
 
 PIN_BUTTON = const(0)
 PIN_RELAY  = const(12)
@@ -17,10 +20,6 @@ PIN_LED    = const(13)
 button = machine.Pin(PIN_BUTTON, machine.Pin.IN)
 relay  = machine.Pin(PIN_RELAY,  machine.Pin.OUT)
 led    = machine.Pin(PIN_LED,    machine.Pin.OUT)
-
-logging.basicConfig(level=logging.DEBUG)
-log = logging.getLogger("sonoffpy")
-
 
 class Handler:
     def __init__(self):
@@ -31,14 +30,14 @@ class Handler:
     #
     def get(self, api_request):
         components = api_request['context']
-        if (components == 'on'):
+        if (components[0] == 'on'):
             relay.off()
             led.off()
-        elif (components == 'off'):
+        elif (components[0] == 'off'):
             relay.on()
             led.on()
-
-        if (relay.off()):
+        # return
+        if (relay.value() == 0):
             return {'state':'on'}
         else:
             return {'state':'off'}
@@ -71,17 +70,17 @@ def check_inputs():
 def teardown():
     '''Should never be run'''
     # oops alert
-    log.critical("Exiting sonoffpy")
+    print("Exiting")
     # disconnect
     # relay off
+    # reboot
+    machine.reset()
 
 def setup():
     '''Setup the system (run once at start)'''
-    log.info("Started - setup hardware")
     # setup IO
     relay.on()
     led.on()
-
     # connect to wifi
     start_ms = utime.ticks_ms()
     iface = network.WLAN(network.STA_IF)
@@ -89,30 +88,22 @@ def setup():
     while not iface.isconnected():
         utime.sleep_ms(100)
         if utime.ticks_diff(start_ms, utime.ticks_ms()) > 10000:
-            log.critical('Connecting to WLAN timed out. Resetting!')
+            print('Connecting timed out!')
             machine.reset()
-
 
 
 def main_loop():
     '''Main run loop'''
-    log.info("get loop")
     loop = asyncio.get_event_loop()
-    log.info("make server")
     # setup webserver
     handler = uhttpd.api_handler.Handler([([], Handler())])
     server = uhttpd.Server([('/', handler)])
-    log.info("add task")
     loop.create_task(check_inputs())
-    log.info("run server")
     server.run()
-
 
 if __name__ == '__main__':
     setup()
     try:
         main_loop()
-    except Exception as exp:
-        sys.print_exception(exp)
     finally:
         teardown()
