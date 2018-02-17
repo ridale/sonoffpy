@@ -31,13 +31,13 @@ class Handler:
     def get(self, api_request):
         components = api_request['context']
         if (components[0] == 'on'):
-            relay.off()
+            relay.on()
             led.off()
         elif (components[0] == 'off'):
-            relay.on()
+            relay.off()
             led.on()
         # return
-        if (relay.value() == 0):
+        if (relay.value() == 1):
             return {'state':'on'}
         else:
             return {'state':'off'}
@@ -59,7 +59,7 @@ def check_inputs():
             else:
                 relay.on()
         
-        if (relay.value() == 0):
+        if (relay.value() == 1):
             led.off() # is on
         else:
             led.on()  # is off
@@ -79,7 +79,7 @@ def teardown():
 def setup():
     '''Setup the system (run once at start)'''
     # setup IO
-    relay.on()
+    relay.off()
     led.on()
     # connect to wifi
     start_ms = utime.ticks_ms()
