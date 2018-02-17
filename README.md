@@ -135,3 +135,13 @@ make
 **NOTE** This code is currently a Work In Progress and it is likely that it does not yet work.
 
 First you will want to edit the config.py file and add your wifi SSID and password. Then load the program to be run at startup by uploading the main.py file to the sonoff using the webrepl upload button.
+
+## test program
+**NOTE** Do not connect the mains power while your serial cable is connected, the sonoff will blow up see [this](https://github.com/arendst/Sonoff-Tasmota/wiki/Hardware-Preparation) if you don't believe me.
+
+Once you have everything loaded and setup you can test that the code is working by
+
+1. Pressing the button and seeing if the light switches on and off
+2. browsing to your sonoff IP address
+    * http://<sonoff ip address>/on
+    * http://<sonoff ip address>/off
