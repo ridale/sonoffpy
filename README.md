@@ -16,6 +16,10 @@ Power on the sonoff holding down the button
 ```
 esptool.py --port /dev/ttyUSB0 --baud 460800 write_flash --flash_size=detect 0 esp8266-20171101-v1.9.3.bin
 ```
+Newer version of sonoff devices works better with following command to load firmware
+```
+esptool.py --port /dev/ttyUSB0 write_flash -fs 1MB -fm dout 0x0 esp8266-20171101-v1.9.3.bin
+```
 
 ## check
 Reboot the board and screen into the prompt
@@ -87,7 +91,7 @@ cd esp-open-sdk
 ```
 Then we need the build tools, these are listed in the esp-open-sdk reaedme
 ```
-sudo apt-get install make unrar-free autoconf automake libtool gcc g++ gperf \
+sudo apt-get install make unrar-free autoconf automake libtool libtool-bin gcc g++ gperf \
     flex bison texinfo gawk ncurses-dev libexpat-dev python-dev python python-serial \
     sed git unzip bash help2man wget bzip2
 ```
@@ -110,6 +114,17 @@ make axtls
 make
 ```
 
+In case of following error
+```
+Use make V=1 or set BUILD_VERBOSE in your environment to increase build verbosity.
+GEN build/genhdr/mpversion.h
+make: xtensa-lx106-elf-gcc: Command not found
+```
+you have to add additional directory to your system $PATH variable:
+```
+PATH=$PATH:$HOME/github/esp-open-sdk/xtensa-lx106-elf/bin/
+```
+
 ### include libs
 Now that we know that the firmware can build on our computer we can add the extra libraries we need to bake into the firmware.
 ```
@@ -123,6 +138,7 @@ Now we want to symlink the library modules we are interested in into the build d
 cd ~/github/micropython/ports/esp8266/modules
 ln -s ~/github/micropython-lib/uasyncio/uasyncio uasyncio
 ln -s ~/github/micropython-lib/uasyncio.core/uasyncio/core.py uasyncio/
+ln -s ~/github/micropython-lib/logging/logging.py logging.py
 ln -s ~/github/esp8266/micropython/uhttpd/uhttpd/ uhttpd
 ```
 Now if we remake our firmware we will get the frozen modules required
